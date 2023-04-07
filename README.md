@@ -1,2 +1,2 @@
 # csprojectassignment.github.io
-A Project by: Vishwa and Harshadh
+A Project by: Vishwa Thangapandiyan and Harshadh Jeyaprakash
