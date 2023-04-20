@@ -14,7 +14,6 @@ password_entry=Entry(frame).grid(column=101,row=101,padx=50,pady=50)
 submit_btn=Button(frame,text="Submit")
 submit_btn.place(x=200,y=200)
 
-
 #running the tkinter code
 root.mainloop()
 
