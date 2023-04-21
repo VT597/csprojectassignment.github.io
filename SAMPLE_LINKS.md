@@ -3,19 +3,19 @@ Link Name - <link>
 
 Categories and Links:
 
--Images:
+Images:
 
 
--Videos:
+Videos:
 Login Page video - https://youtu.be/iaStX7DXH6E
 
 
--Vector Images:
+Vector Images:
 
 
--gif Images:
+gif Images:
 
 
--Websites:
+Websites:
 
 
