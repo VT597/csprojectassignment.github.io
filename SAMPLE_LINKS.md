@@ -1,21 +1,21 @@
 #Sample format:
-Link Name - <link>
+Link Name - (link)
 
 Categories and Links:
 
-Images:
+Images
 
 
-Videos:
-Login Page video - https://youtu.be/iaStX7DXH6E
+Videos
+-Login Page video - https://youtu.be/iaStX7DXH6E
 
 
-Vector Images:
+Vector Images
 
 
-gif Images:
+gif Images
 
 
-Websites:
+Websites
 
 
