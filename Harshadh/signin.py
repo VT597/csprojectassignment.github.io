@@ -1,5 +1,7 @@
 from tkinter import *
+from tkinter import messagebox
 from PIL import ImageTk
+import pymysql
 
 #Functions
 def uon_enter(event):
@@ -23,6 +25,98 @@ def show():
 def signup_page():
     win1.destroy()
     import signup
+
+def forget_pass():
+    def change_pass():
+        if username_entry.get()=='' or newpass_Entry.get()=='' or confirmpass_Entry.get()=='':
+            messagebox.showerror('Error',"All fields need to be entered.",parent=win3)
+        elif newpass_Entry.get()!=confirmpass_Entry.get():
+            messagebox.showerror('Error',"Those passwords didn't match.",parent=win3)
+        else:
+            con = pymysql.connect(host='<Your host>', user='<Your User>', password='<Your Password>',database='<Your Database>')
+            mycursor1 = con.cursor()
+            query= "select * from data where username=%s"
+            mycursor1.execute(query,(user_Entry.get()))
+            row= mycursor1.fetchone()
+            print(row)
+            if row==None:
+                messagebox.showerror('Error',"Username doesn't exist. Please check and try again.",parent=win3)
+            else:
+                query= "update data set password=%s where username=%s"
+                mycursor1.execute(query,(newpass_Entry.get(),user_Entry.get()))
+                con.commit()
+                con.close()
+                messagebox.showinfo('Success', 'Password successfully changed.',parent=win3)
+                win3.destroy()
+
+
+
+    win3= Toplevel()
+    win3.title('Forgot Password')
+    win3.resizable(0,0)
+
+    bgImage3= ImageTk.PhotoImage(file='forgotpasswordbg.jpg')
+    bgLabel3= Label(win3,image=bgImage3)
+    bgLabel3.grid()
+
+    heading2= Label(win3,text="RESET PASSWORD",font=('arial',15,'bold'),bg='white',fg='Royalblue1')
+    heading2.place(x=215,y=85)
+
+    userlabel= Label(win3,text='Username', font=('arial',10,'bold'),bg='white',fg='skyblue1')
+    userlabel.place(x=205,y=120)
+
+    user_Entry = Entry(win3, width=25, font=("arial", 11, "bold"), fg='royalblue1', bg='white', cursor='tcross',bd=0)
+    user_Entry.place(x=205,y=145)
+
+    Frame(win3,width=200,height=2,bg="Skyblue1").place(x=205,y=165)
+
+    password_label= Label(win3,text='New Password', font=('arial',10,'bold'),bg='white',fg='skyblue1')
+    password_label.place(x=205,y=175)
+
+    newpass_Entry = Entry(win3, width=25, font=("arial", 11, "bold"), fg='royalblue1', bg='white', cursor='tcross',bd=0)
+    newpass_Entry.place(x=205,y=200)
+
+    Frame(win3,width=200,height=2,bg="Skyblue1").place(x=205,y=220)
+
+    confirmpassword_label= Label(win3,text='Confirm Password', font=('arial',10,'bold'),bg='white',fg='skyblue1')
+    confirmpassword_label.place(x=205,y=230)
+
+    confirmpass_Entry = Entry(win3, width=25, font=("arial", 11, "bold"), fg='royalblue1', bg='white', cursor='tcross',bd=0)
+    confirmpass_Entry.place(x=205,y=255)
+
+    Frame(win3,width=200,height=2,bg="Skyblue1").place(x=205,y=275)
+
+    submit_Button = Button(win3, text='Submit', font=("Open Sans", 12, "bold"), fg='White', bg='Royalblue2', bd=0
+                           , activebackground='royalblue2', activeforeground='White', width=20, command=change_pass)
+    submit_Button.place(x=205,y=300)
+
+    win3.mainloop()
+
+def login_user():
+    if username_entry.get()=='' or password_entry.get()=='':
+        messagebox.showerror('Error', "All fields need to be entered.")
+
+
+    else:
+        try:
+            con1= pymysql.connect(host='<Your host>', user='<Your User>', password='<Your Password>')
+            mycursor1= con1.cursor()
+        except:
+            messagebox.showerror('Error', 'Connection is not establised. Try again.')
+            return
+
+        query= 'use <Your Database>'
+        mycursor1.execute(query)
+        query= 'select * from  data where username=%s and password=%s'
+        mycursor1.execute(query,(username_entry.get(), password_entry.get()))
+
+        row= mycursor1.fetchone()
+        if row==None:
+            messagebox.showerror('Error','Invalid Username or Password. Please check try again.')
+        else:
+            messagebox.showinfo('Success', 'Successfully Logged In')
+
+
 
 #GUI
 win1= Tk()
@@ -57,12 +151,12 @@ eyeButton.place(x=800,y=232)
 
 forgetButton= Button(win1,text= "Forgot Password?",bd=0,bg='white',activebackground='White'
                      ,cursor='hand2', font=("Lato",9,"bold"),fg='midnight blue',
-                     activeforeground='midnight blue')
+                     activeforeground='midnight blue',command=forget_pass)
 forgetButton.place(x=715,y=272)
 
 loginButton= Button(win1, text= 'Login',font=("Open sans",16,"bold"), fg= "White", bg="midnight blue"
                     ,cursor='hand2' ,activebackground= 'midnight blue', activeforeground='white',
-                    bd=0,width=17)
+                    bd=0,width=17,command=login_user)
 loginButton.place(x=600,y=300)
 
 orLabel= Label(win1,text="--------------OR--------------",font=("Open sans",16)
