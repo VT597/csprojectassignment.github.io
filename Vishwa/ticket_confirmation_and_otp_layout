@@ -1,58 +1,111 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import random
 import string
+from tkcalendar import Calendar
 
 # Function to generate a random OTP
 def generate_otp():
     otp = ''.join(random.choice(string.digits) for _ in range(6))
-    otp_label.config(text=f"Your OTP: {otp}")
+    otp_window = tk.Toplevel(root)
+    otp_window.title("OTP Confirmation")
+    otp_label = ttk.Label(otp_window, text=f"Your OTP: {otp}", font=("Arial", 18))
+    otp_label.pack(pady=20)
+
+    otp_entry_label = ttk.Label(otp_window, text="Enter OTP:")
+    otp_entry_label.pack(pady=5)
+    otp_entry = ttk.Entry(otp_window)
+    otp_entry.pack(pady=5)
+
+    confirm_booking_button = ttk.Button(otp_window, text="Confirm Booking", command=lambda: confirm_booking(otp, otp_entry.get()))
+    confirm_booking_button.pack(pady=10)
 
 # Function to handle the payment and ticket generation
 def process_payment():
-    # Implement payment processing logic here
+    card_type_selected = card_type.get()
+    if card_type_selected in ["Credit Card", "Debit Card"]:
+        card_options_selected = card_options.get()
+        card_number = card_number_entry.get()
+        expiry_date = expiry_date_cal.get_date()
+        cvv = cvv_entry.get()
 
-    # Generate a PDF ticket with QR code
-    # Save ticket details in MySQL database
-    pass
+        # Implement payment processing logic here
+        # Generate a PDF ticket with QR code
+        # Save ticket details in MySQL database
+
+        # Display a confirmation message
+        messagebox.showinfo("Payment Confirmation", "Payment Successful! Your ticket has been booked.")
+
+    elif card_type_selected == "PayPal" or card_type_selected == "Google Pay":
+        # Implement PayPal or Google Pay logic here
+        generate_otp()  # Generate OTP for PayPal and Google Pay
+
+# Function to confirm booking with OTP
+def confirm_booking(otp, entered_otp):
+    if otp == entered_otp:
+        messagebox.showinfo("Booking Confirmation", "Booking Confirmed! Your ticket has been booked.")
+    else:
+        messagebox.showerror("OTP Error", "Entered OTP is incorrect. Please try again.")
 
 # Create the main window
 root = tk.Tk()
-root.title("Ticket Booking")
+root.title("Payment Gate Page")
+root.geometry("800x600")  # Set the window size
 
-# Create a frame for card options
-card_frame = ttk.LabelFrame(root, text="Select Card Type")
-card_frame.pack(pady=10)
+# Create a heading
+heading_label = ttk.Label(root, text="Payment Gate Page", font=("Arial", 20))
+heading_label.pack(pady=20)
+
+# Create a frame for card type selection
+card_type_frame = ttk.LabelFrame(root, text="Select Payment Type")
+card_type_frame.pack(pady=20)
 
 card_type = tk.StringVar()
-card_options = ["Credit Card", "Debit Card", "PayPal"]
-for i, option in enumerate(card_options):
-    ttk.Radiobutton(card_frame, text=option, variable=card_type, value=option).grid(row=i, column=0, padx=10, pady=5)
+card_options = ttk.Combobox(card_type_frame, textvariable=card_type, values=["Credit Card", "Debit Card", "PayPal", "Google Pay"])
+card_options.grid(row=0, column=0, padx=10, pady=5)
+card_options.set("Select Payment Type")
 
-# Create a frame for card details
-details_frame = ttk.LabelFrame(root, text="Enter Card Details")
-details_frame.pack(pady=10)
+# Create a frame for card options (Card Type-specific)
+card_options_frame = ttk.LabelFrame(root, text="Enter Card Details")
 
-card_label = ttk.Label(details_frame, text="Card Number:")
-card_label.grid(row=0, column=0, padx=10, pady=5)
-card_entry = ttk.Entry(details_frame)
-card_entry.grid(row=0, column=1, padx=10, pady=5)
+card_number_label = ttk.Label(card_options_frame, text="Card Number")
+card_number_entry = ttk.Entry(card_options_frame)
 
-# Create an OTP frame
+expiry_date_label = ttk.Label(card_options_frame, text="Expiry Date")
+expiry_date_cal = Calendar(card_options_frame, date_pattern="dd/mm/yyyy")
+
+cvv_label = ttk.Label(card_options_frame, text="CVV")
+cvv_entry = ttk.Entry(card_options_frame)
+
+# Create a frame for OTP
 otp_frame = ttk.LabelFrame(root, text="OTP")
-otp_frame.pack(pady=10)
 
-otp_label = ttk.Label(otp_frame, text="")
-otp_label.pack()
+confirm_otp_button = ttk.Button(otp_frame, text="Generate OTP", command=generate_otp)
 
-generate_otp_button = ttk.Button(otp_frame, text="Generate OTP", command=generate_otp)
-generate_otp_button.pack()
+# Function to show/hide card options based on selected payment type
+def show_hide_card_options(*args):
+    selected_type = card_type.get()
+    card_options_frame.pack_forget()
+    otp_frame.pack_forget()
 
-# Create a confirmation frame
-confirmation_frame = ttk.LabelFrame(root, text="Confirmation")
-confirmation_frame.pack(pady=10)
+    if selected_type in ["Credit Card", "Debit Card"]:
+        card_options_frame.pack(pady=20)
+        card_number_label.grid(row=0, column=0, padx=10, pady=5)
+        card_number_entry.grid(row=0, column=1, padx=10, pady=5)
+        expiry_date_label.grid(row=1, column=0, padx=10, pady=5)
+        expiry_date_cal.grid(row=1, column=1, padx=10, pady=5)
+        cvv_label.grid(row=2, column=0, padx=10, pady=5)
+        cvv_entry.grid(row=2, column=1, padx=10, pady=5)
+        confirm_otp_button.pack(pady=10)
+    elif selected_type in ["PayPal", "Google Pay"]:
+        otp_frame.pack(pady=20)
+        confirm_otp_button.pack(pady=10)
 
-confirm_button = ttk.Button(confirmation_frame, text="Confirm Booking", command=process_payment)
-confirm_button.pack()
+# Bind the function to the card type selection
+card_type.trace_add("write", show_hide_card_options)
+
+# Create a confirmation button
+confirm_button = ttk.Button(root, text="Confirm Booking", command=process_payment)
 
 root.mainloop()
