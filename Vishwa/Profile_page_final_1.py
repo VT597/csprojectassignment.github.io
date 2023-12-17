@@ -1,16 +1,20 @@
 from tkinter import *
 from tkinter import filedialog
-from tkinter import TclError
+from tkinter import messagebox
 
 def open_file_dialog():
     try:
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.gif")])
         if file_path:
-            pfp_img = PhotoImage(file=file_path)
-            pfp_label.config(image=pfp_img)
-            pfp_label.image = pfp_img  # Keep a reference to avoid garbage collection
-    except TclError:
-        messagebox.showerror("Error", "Invalid image file format. Please select a valid image.")
+            img = PhotoImage(file=file_path)
+
+            # Resize the image to fit the PFP area (adjust as needed)
+            img = img.subsample(2, 2)  # Change the factors (2, 2) to your desired values
+
+            pfp_label.config(image=img)
+            pfp_label.image = img  # Keep a reference to avoid garbage collection
+    except Exception as e:
+        messagebox.showerror("Error", f"Error loading image: {str(e)}")
 
 # Create the main window
 profile_window = Tk()
