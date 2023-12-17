@@ -3,7 +3,7 @@ from tkinter import messagebox
 from PIL import ImageTk
 import pymysql
 
-# Functions
+# Functionsl
 def uon_enter(event):
     if username_entry.get() == "Username":
         username_entry.delete(0, END)
